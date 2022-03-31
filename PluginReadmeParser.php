@@ -11,6 +11,7 @@ class PluginReadmeParser{
     $parser = new PluginReadmeParser();
     if($data->get('data/file')){
       $file = $data->get('data/file');
+      $file = wfSettings::replaceDir($file);
       $file = wfGlobals::getAppDir().$file;
       $exist = wfFilesystem::fileExist($file);
       $readme = null;
