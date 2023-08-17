@@ -24,11 +24,11 @@ class PluginReadmeParser{
     }
     if($data->get('data/content')){
       $content = wfSettings::getSettingsFromYmlString($data->get('data/content'));
-      $content = str_replace('[h1]', '#', $content);
-      $content = str_replace('[h2]', '##', $content);
-      $content = str_replace('[h3]', '###', $content);
-      $content = str_replace('[h4]', '####', $content);
-      $content = str_replace('[h5]', '#####', $content);
+      $content = wfPhpfunc::str_replace('[h1]', '#', $content);
+      $content = wfPhpfunc::str_replace('[h2]', '##', $content);
+      $content = wfPhpfunc::str_replace('[h3]', '###', $content);
+      $content = wfPhpfunc::str_replace('[h4]', '####', $content);
+      $content = wfPhpfunc::str_replace('[h5]', '#####', $content);
       $content = $parser->parse_text($content);
       $element = wfDocument::createHtmlElement('div', $content);
       wfDocument::renderElement(array($element));
