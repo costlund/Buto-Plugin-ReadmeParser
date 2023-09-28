@@ -17,7 +17,7 @@ class Parsedown
 {
     # ~
 
-    const version = '1.8.0-beta-5';
+    const version = '1.8.0-beta-7';
 
     # ~
 
@@ -40,7 +40,7 @@ class Parsedown
         $this->DefinitionData = array();
 
         # standardize line breaks
-        $text = wfPhpfunc::str_replace(array("\r\n", "\r"), "\n", $text);
+        $text = str_replace(array("\r\n", "\r"), "\n", $text);
 
         # remove surrounding line breaks
         $text = trim($text, "\n");
@@ -183,19 +183,19 @@ class Parsedown
                 continue;
             }
 
-            while (($beforeTab = wfPhpfunc::strstr($line, "\t", true)) !== false)
+            while (($beforeTab = strstr($line, "\t", true)) !== false)
             {
                 $shortage = 4 - mb_strlen($beforeTab, 'utf-8') % 4;
 
                 $line = $beforeTab
                     . str_repeat(' ', $shortage)
-                    . wfPhpfunc::substr($line, wfPhpfunc::strlen($beforeTab) + 1)
+                    . substr($line, strlen($beforeTab) + 1)
                 ;
             }
 
             $indent = strspn($line, ' ');
 
-            $text = $indent > 0 ? wfPhpfunc::substr($line, $indent) : $line;
+            $text = $indent > 0 ? substr($line, $indent) : $line;
 
             # ~
 
@@ -355,7 +355,7 @@ class Parsedown
 
         if ($Line['indent'] >= 4)
         {
-            $text = wfPhpfunc::substr($Line['body'], 4);
+            $text = substr($Line['body'], 4);
 
             $Block = array(
                 'element' => array(
@@ -384,7 +384,7 @@ class Parsedown
 
             $Block['element']['element']['text'] .= "\n";
 
-            $text = wfPhpfunc::substr($Line['body'], 4);
+            $text = substr($Line['body'], 4);
 
             $Block['element']['element']['text'] .= $text;
 
@@ -456,7 +456,7 @@ class Parsedown
             return;
         }
 
-        $infostring = trim(wfPhpfunc::substr($Line['text'], $openerLength), "\t ");
+        $infostring = trim(substr($Line['text'], $openerLength), "\t ");
 
         if (strpos($infostring, '`') !== false)
         {
@@ -470,7 +470,21 @@ class Parsedown
 
         if ($infostring !== '')
         {
-            $Element['attributes'] = array('class' => "language-$infostring");
+            /**
+             * https://www.w3.org/TR/2011/WD-html5-20110525/elements.html#classes
+             * Every HTML element may have a class attribute specified.
+             * The attribute, if specified, must have a value that is a set
+             * of space-separated tokens representing the various classes
+             * that the element belongs to.
+             * [...]
+             * The space characters, for the purposes of this specification,
+             * are U+0020 SPACE, U+0009 CHARACTER TABULATION (tab),
+             * U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
+             * U+000D CARRIAGE RETURN (CR).
+             */
+            $language = substr($infostring, 0, strcspn($infostring, " \t\n\f\r"));
+
+            $Element['attributes'] = array('class' => "language-$language");
         }
 
         $Block = array(
@@ -500,9 +514,9 @@ class Parsedown
         }
 
         if (($len = strspn($Line['text'], $Block['char'])) >= $Block['openerLength']
-            and chop(wfPhpfunc::substr($Line['text'], $len), ' ') === ''
+            and chop(substr($Line['text'], $len), ' ') === ''
         ) {
-            $Block['element']['element']['text'] = wfPhpfunc::substr($Block['element']['element']['text'], 1);
+            $Block['element']['element']['text'] = substr($Block['element']['element']['text'], 1);
 
             $Block['complete'] = true;
 
@@ -563,12 +577,12 @@ class Parsedown
 
         if (preg_match('/^('.$pattern.'([ ]++|$))(.*+)/', $Line['text'], $matches))
         {
-            $contentIndent = wfPhpfunc::strlen($matches[2]);
+            $contentIndent = strlen($matches[2]);
 
             if ($contentIndent >= 5)
             {
                 $contentIndent -= 1;
-                $matches[1] = wfPhpfunc::substr($matches[1], 0, -$contentIndent);
+                $matches[1] = substr($matches[1], 0, -$contentIndent);
                 $matches[3] = str_repeat(' ', $contentIndent) . $matches[3];
             }
             elseif ($contentIndent === 0)
@@ -576,7 +590,7 @@ class Parsedown
                 $matches[1] .= ' ';
             }
 
-            $markerWithoutWhitespace = wfPhpfunc::strstr($matches[1], ' ', true);
+            $markerWithoutWhitespace = strstr($matches[1], ' ', true);
 
             $Block = array(
                 'indent' => $Line['indent'],
@@ -584,7 +598,7 @@ class Parsedown
                 'data' => array(
                     'type' => $name,
                     'marker' => $matches[1],
-                    'markerType' => ($name === 'ul' ? $markerWithoutWhitespace : wfPhpfunc::substr($markerWithoutWhitespace, -1)),
+                    'markerType' => ($name === 'ul' ? $markerWithoutWhitespace : substr($markerWithoutWhitespace, -1)),
                 ),
                 'element' => array(
                     'name' => $name,
@@ -595,7 +609,7 @@ class Parsedown
 
             if ($name === 'ol')
             {
-                $listStart = ltrim(wfPhpfunc::strstr($matches[1], $Block['data']['markerType'], true), '0') ?: '0';
+                $listStart = ltrim(strstr($matches[1], $Block['data']['markerType'], true), '0') ?: '0';
 
                 if ($listStart !== '1')
                 {
@@ -633,7 +647,7 @@ class Parsedown
             return null;
         }
 
-        $requiredIndent = ($Block['indent'] + wfPhpfunc::strlen($Block['data']['marker']));
+        $requiredIndent = ($Block['indent'] + strlen($Block['data']['marker']));
 
         if ($Line['indent'] < $requiredIndent
             and (
@@ -695,7 +709,7 @@ class Parsedown
                 unset($Block['interrupted']);
             }
 
-            $text = wfPhpfunc::substr($Line['body'], $requiredIndent);
+            $text = substr($Line['body'], $requiredIndent);
 
             $Block['li']['handler']['argument'] []= $text;
 
@@ -926,7 +940,7 @@ class Parsedown
                 $alignment = 'left';
             }
 
-            if (wfPhpfunc::substr($dividerCell, - 1) === ':')
+            if (substr($dividerCell, - 1) === ':')
             {
                 $alignment = $alignment === 'left' ? 'center' : 'right';
             }
@@ -1121,7 +1135,7 @@ class Parsedown
     protected function lineElements($text, $nonNestables = array())
     {
         # standardize line breaks
-        $text = wfPhpfunc::str_replace(array("\r\n", "\r"), "\n", $text);
+        $text = str_replace(array("\r\n", "\r"), "\n", $text);
 
         $Elements = array();
 
@@ -1136,7 +1150,7 @@ class Parsedown
         {
             $marker = $excerpt[0];
 
-            $markerPosition = wfPhpfunc::strlen($text) - wfPhpfunc::strlen($excerpt);
+            $markerPosition = strlen($text) - strlen($excerpt);
 
             $Excerpt = array('text' => $excerpt, 'context' => $text);
 
@@ -1179,7 +1193,7 @@ class Parsedown
                 ;
 
                 # the text that comes before the inline
-                $unmarkedText = wfPhpfunc::substr($text, 0, $Inline['position']);
+                $unmarkedText = substr($text, 0, $Inline['position']);
 
                 # compile the unmarked text
                 $InlineText = $this->inlineText($unmarkedText);
@@ -1189,19 +1203,19 @@ class Parsedown
                 $Elements[] = $this->extractElement($Inline);
 
                 # remove the examined text
-                $text = wfPhpfunc::substr($text, $Inline['position'] + $Inline['extent']);
+                $text = substr($text, $Inline['position'] + $Inline['extent']);
 
                 continue 2;
             }
 
             # the marker does not belong to an inline
 
-            $unmarkedText = wfPhpfunc::substr($text, 0, $markerPosition + 1);
+            $unmarkedText = substr($text, 0, $markerPosition + 1);
 
             $InlineText = $this->inlineText($unmarkedText);
             $Elements[] = $InlineText['element'];
 
-            $text = wfPhpfunc::substr($text, $markerPosition + 1);
+            $text = substr($text, $markerPosition + 1);
         }
 
         $InlineText = $this->inlineText($text);
@@ -1225,7 +1239,7 @@ class Parsedown
     protected function inlineText($text)
     {
         $Inline = array(
-            'extent' => wfPhpfunc::strlen($text),
+            'extent' => strlen($text),
             'element' => array(),
         );
 
@@ -1251,7 +1265,7 @@ class Parsedown
             $text = preg_replace('/[ ]*+\n/', ' ', $text);
 
             return array(
-                'extent' => wfPhpfunc::strlen($matches[0]),
+                'extent' => strlen($matches[0]),
                 'element' => array(
                     'name' => 'code',
                     'text' => $text,
@@ -1278,7 +1292,7 @@ class Parsedown
             }
 
             return array(
-                'extent' => wfPhpfunc::strlen($matches[0]),
+                'extent' => strlen($matches[0]),
                 'element' => array(
                     'name' => 'a',
                     'text' => $matches[1],
@@ -1313,7 +1327,7 @@ class Parsedown
         }
 
         return array(
-            'extent' => wfPhpfunc::strlen($matches[0]),
+            'extent' => strlen($matches[0]),
             'element' => array(
                 'name' => $emphasis,
                 'handler' => array(
@@ -1343,7 +1357,7 @@ class Parsedown
             return;
         }
 
-        $Excerpt['text']= wfPhpfunc::substr($Excerpt['text'], 1);
+        $Excerpt['text']= substr($Excerpt['text'], 1);
 
         $Link = $this->inlineLink($Excerpt);
 
@@ -1395,9 +1409,9 @@ class Parsedown
         {
             $Element['handler']['argument'] = $matches[1];
 
-            $extent += wfPhpfunc::strlen($matches[0]);
+            $extent += strlen($matches[0]);
 
-            $remainder = wfPhpfunc::substr($remainder, $extent);
+            $remainder = substr($remainder, $extent);
         }
         else
         {
@@ -1410,19 +1424,19 @@ class Parsedown
 
             if (isset($matches[2]))
             {
-                $Element['attributes']['title'] = wfPhpfunc::substr($matches[2], 1, - 1);
+                $Element['attributes']['title'] = substr($matches[2], 1, - 1);
             }
 
-            $extent += wfPhpfunc::strlen($matches[0]);
+            $extent += strlen($matches[0]);
         }
         else
         {
             if (preg_match('/^\s*\[(.*?)\]/', $remainder, $matches))
             {
-                $definition = wfPhpfunc::strlen($matches[1]) ? $matches[1] : $Element['handler']['argument'];
+                $definition = strlen($matches[1]) ? $matches[1] : $Element['handler']['argument'];
                 $definition = strtolower($definition);
 
-                $extent += wfPhpfunc::strlen($matches[0]);
+                $extent += strlen($matches[0]);
             }
             else
             {
@@ -1457,7 +1471,7 @@ class Parsedown
         {
             return array(
                 'element' => array('rawHtml' => $matches[0]),
-                'extent' => wfPhpfunc::strlen($matches[0]),
+                'extent' => strlen($matches[0]),
             );
         }
 
@@ -1465,7 +1479,7 @@ class Parsedown
         {
             return array(
                 'element' => array('rawHtml' => $matches[0]),
-                'extent' => wfPhpfunc::strlen($matches[0]),
+                'extent' => strlen($matches[0]),
             );
         }
 
@@ -1473,19 +1487,19 @@ class Parsedown
         {
             return array(
                 'element' => array('rawHtml' => $matches[0]),
-                'extent' => wfPhpfunc::strlen($matches[0]),
+                'extent' => strlen($matches[0]),
             );
         }
     }
 
     protected function inlineSpecialCharacter($Excerpt)
     {
-        if (wfPhpfunc::substr($Excerpt['text'], 1, 1) !== ' ' and strpos($Excerpt['text'], ';') !== false
+        if (substr($Excerpt['text'], 1, 1) !== ' ' and strpos($Excerpt['text'], ';') !== false
             and preg_match('/^&(#?+[0-9a-zA-Z]++);/', $Excerpt['text'], $matches)
         ) {
             return array(
                 'element' => array('rawHtml' => '&' . $matches[1] . ';'),
-                'extent' => wfPhpfunc::strlen($matches[0]),
+                'extent' => strlen($matches[0]),
             );
         }
 
@@ -1502,7 +1516,7 @@ class Parsedown
         if ($Excerpt['text'][1] === '~' and preg_match('/^~~(?=\S)(.+?)(?<=\S)~~/', $Excerpt['text'], $matches))
         {
             return array(
-                'extent' => wfPhpfunc::strlen($matches[0]),
+                'extent' => strlen($matches[0]),
                 'element' => array(
                     'name' => 'del',
                     'handler' => array(
@@ -1528,7 +1542,7 @@ class Parsedown
             $url = $matches[0][0];
 
             $Inline = array(
-                'extent' => wfPhpfunc::strlen($matches[0][0]),
+                'extent' => strlen($matches[0][0]),
                 'position' => $matches[0][1],
                 'element' => array(
                     'name' => 'a',
@@ -1550,7 +1564,7 @@ class Parsedown
             $url = $matches[1];
 
             return array(
-                'extent' => wfPhpfunc::strlen($matches[0]),
+                'extent' => strlen($matches[0]),
                 'element' => array(
                     'name' => 'a',
                     'text' => $url,
@@ -1815,8 +1829,8 @@ class Parsedown
         while (preg_match($regexp, $text, $matches, PREG_OFFSET_CAPTURE))
         {
             $offset = $matches[0][1];
-            $before = wfPhpfunc::substr($text, 0, $offset);
-            $after = wfPhpfunc::substr($text, $offset + wfPhpfunc::strlen($matches[0][0]));
+            $before = substr($text, 0, $offset);
+            $after = substr($text, $offset + strlen($matches[0][0]));
 
             $newElements[] = array('text' => $before);
 
@@ -1893,7 +1907,7 @@ class Parsedown
             }
         }
 
-        $Element['attributes'][$attribute] = wfPhpfunc::str_replace(':', '%3A', $Element['attributes'][$attribute]);
+        $Element['attributes'][$attribute] = str_replace(':', '%3A', $Element['attributes'][$attribute]);
 
         return $Element;
     }
@@ -1909,15 +1923,15 @@ class Parsedown
 
     protected static function striAtStart($string, $needle)
     {
-        $len = wfPhpfunc::strlen($needle);
+        $len = strlen($needle);
 
-        if ($len > wfPhpfunc::strlen($string))
+        if ($len > strlen($string))
         {
             return false;
         }
         else
         {
-            return strtolower(wfPhpfunc::substr($string, 0, $len)) === strtolower($needle);
+            return strtolower(substr($string, 0, $len)) === strtolower($needle);
         }
     }
 

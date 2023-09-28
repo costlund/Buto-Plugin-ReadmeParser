@@ -17,8 +17,8 @@ Better Markdown Parser in PHP - <a href="http://parsedown.org/demo">Demo</a>.
 * No Dependencies
 * [Super Fast](http://parsedown.org/speed)
 * Extensible
-* [GitHub flavored](https://help.github.com/articles/github-flavored-markdown)
-* [Tested](http://parsedown.org/tests/) in 5.3 to 7.2 and in HHVM
+* [GitHub flavored](https://github.github.com/gfm)
+* [Tested](http://parsedown.org/tests/) in 5.3 to 7.3
 * [Markdown Extra extension](https://github.com/erusev/parsedown-extra)
 
 ## Installation
@@ -68,7 +68,7 @@ Safe mode does not necessarily yield safe results when using extensions to Parse
 
 ## Escaping HTML
 
-> ⚠️  **WARNING:** This method isn't safe from XSS!
+> **WARNING:** This method isn't safe from XSS!
 
 If you wish to escape HTML **in trusted input**, you can use the following:
 
@@ -92,8 +92,12 @@ It passes most of the CommonMark tests. Most of the tests that don't pass deal w
 
 **Who uses it?**
 
-[Laravel Framework](https://laravel.com/), [Bolt CMS](http://bolt.cm/), [Grav CMS](http://getgrav.org/), [Herbie CMS](http://www.getherbie.org/), [Kirby CMS](http://getkirby.com/), [October CMS](http://octobercms.com/), [Pico CMS](http://picocms.org), [Statamic CMS](http://www.statamic.com/), [phpDocumentor](http://www.phpdoc.org/), [RaspberryPi.org](http://www.raspberrypi.org/), [Symfony demo](https://github.com/symfony/symfony-demo) and [more](https://packagist.org/packages/erusev/parsedown/dependents).
+[Laravel Framework](https://laravel.com/), [Bolt CMS](http://bolt.cm/), [Grav CMS](http://getgrav.org/), [Herbie CMS](http://www.getherbie.org/), [Kirby CMS](http://getkirby.com/), [October CMS](http://octobercms.com/), [Pico CMS](http://picocms.org), [Statamic CMS](http://www.statamic.com/), [phpDocumentor](http://www.phpdoc.org/), [RaspberryPi.org](http://www.raspberrypi.org/), [Symfony Demo](https://github.com/symfony/demo) and [more](https://packagist.org/packages/erusev/parsedown/dependents).
 
 **How can I help?**
 
 Use it, star it, share it and if you feel generous, [donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=528P3NZQMP8N2).
+
+**What else should I know?**
+
+I also make [Nota](https://nota.md/) — a writing app designed for Markdown files :)
