@@ -40,7 +40,7 @@ class Parsedown
         $this->DefinitionData = array();
 
         # standardize line breaks
-        $text = str_replace(array("\r\n", "\r"), "\n", $text);
+        $text = wfPhpfunc::str_replace(array("\r\n", "\r"), "\n", $text);
 
         # remove surrounding line breaks
         $text = trim($text, "\n");
@@ -1135,7 +1135,7 @@ class Parsedown
     protected function lineElements($text, $nonNestables = array())
     {
         # standardize line breaks
-        $text = str_replace(array("\r\n", "\r"), "\n", $text);
+        $text = wfPhpfunc::str_replace(array("\r\n", "\r"), "\n", $text);
 
         $Elements = array();
 
@@ -1907,7 +1907,7 @@ class Parsedown
             }
         }
 
-        $Element['attributes'][$attribute] = str_replace(':', '%3A', $Element['attributes'][$attribute]);
+        $Element['attributes'][$attribute] = wfPhpfunc::str_replace(':', '%3A', $Element['attributes'][$attribute]);
 
         return $Element;
     }
